@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt><title>Illustrative synthetic example for Epistemis</title></titleStmt>
+      <publicationStmt><p>Original synthetic example; not a published paper.</p></publicationStmt>
+      <sourceDesc><p>Created for software testing and demonstration.</p></sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <div>
+        <head>Introduction</head>
+        <p>This synthetic example describes a fictional measurement procedure. The procedure was tested under one specified laboratory condition.</p>
+        <p>The illustrative result suggests a possible association between the measured variables. The result does not establish a universal causal relationship.</p>
+      </div>
+    </body>
+  </text>
+</TEI>

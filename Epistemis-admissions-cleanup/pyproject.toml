@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "epistemis"
+version = "0.1.0"
+description = "A deterministic research prototype for analysing epistemic and rhetorical patterns in scientific writing."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "lxml>=5.0",
+    "spacy>=3.7,<4.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0,<9.0"]
+
+[project.scripts]
+epistemis = "epistemis.metrics:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
