@@ -26,7 +26,7 @@ This glossary explains terms as they are used in the Epistemis project. Some hav
 | **Heuristic score** | A score based on hand-designed rules or weights. It is not automatically a probability, confidence level, or validated measure. |
 | **Precision** | Among the cases a system flags, the proportion that are judged correct against a defined reference annotation. |
 | **Recall** | Among all cases judged relevant in a reference annotation, the proportion the system successfully flags. |
-| **F1 score** | A combined measure of precision and recall. It cannot be calculated meaningfully without a defined evaluation set and annotations. |
+| **F1 score (evaluation statistic)** | A combined measure of precision and recall. This is different from the project's **F1 label**, which names one of its primary rule categories. The shared abbreviation is coincidental; they are not the same thing. An evaluation F1 score cannot be calculated meaningfully without a defined evaluation set and annotations. |
 | **Inter-annotator agreement** | A measure of how consistently independent human annotators apply the same annotation scheme. |
 
 ## A note on the word "bias"
