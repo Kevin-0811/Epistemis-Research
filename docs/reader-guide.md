@@ -19,10 +19,10 @@ The key question to keep in mind is: **What does the sentence's wording signal, 
 
 1. **[README](../README.md)** — dependencies, installation, and command-line use.
 2. **[Architecture](architecture.md)** — the runtime sequence and module responsibilities.
-3. **src/epistemis/preprocessor.py** — TEI extraction, sentence processing, structural features, and anchor heuristics.
-4. **src/epistemis/classifier.py** — feature extraction, F/A/M rules, and heuristic scoring.
-5. **src/epistemis/metrics.py** — document-level aggregation and command-line interface.
-6. **tests/** — the current parser and metrics unit tests.
+3. **[preprocessor.py](../src/epistemis/preprocessor.py)** — TEI extraction, sentence processing, structural features, and anchor heuristics.
+4. **[classifier.py](../src/epistemis/classifier.py)** — feature extraction, F/A/M rules, and heuristic scoring.
+5. **[metrics.py](../src/epistemis/metrics.py)** — document-level aggregation and command-line interface.
+6. **[tests/](../tests/)** — the current parser and metrics unit tests.
 7. **[Methodology](methodology.md), [taxonomy](taxonomy.md), and [limitations](limitations.md)** — intended interpretation and research caveats.
 
 ## If you want to understand the research and implementation together
