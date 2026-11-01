@@ -1,46 +1,66 @@
 # Epistemis
 
-**A deterministic, rule-based prototype for analysing epistemic and rhetorical patterns in scientific writing.**
+**A research prototype for examining how scientific writing expresses claims, certainty, and evidence.**
 
-Epistemis parses GROBID TEI XML, segments scientific text into sentences, extracts linguistic and contextual signals, and applies explicit rules to flag selected patterns of rhetorical overstatement. It is a research prototype—not a system that determines whether a paper is true, deceptive, biased, or scientifically invalid.
+Scientific papers do more than report observations. They also make claims, interpret results, describe methods, refer to other researchers, and signal how certain a conclusion is. The wording matters: a cautious interpretation and a broad causal claim communicate different levels of certainty.
 
-## What is implemented
+Epistemis is an experimental tool for examining some of those language patterns. It processes structured scientific text, identifies selected linguistic and contextual signals, and applies explicit rules to flag sentences that may merit closer human review.
 
-The maintained runtime combines three components:
+It does **not** decide whether a paper is true, whether an author is dishonest, or whether a scientific conclusion is valid. Its flags are prompts for inspection—not verdicts.
 
-- **TEI preprocessor:** parses GROBID TEI XML; extracts paragraph, figure-caption, and table text; segments sentences with spaCy; assigns structural and epistemic features; and detects and links selected evidence-anchor signals.
-- **Rule-based classifier:** applies F-series rules and emits supported A-series and M-series labels.
-- **Document metrics:** summarizes label counts/distributions, anchor use, heuristic scores, and exploratory diagnostics.
+## Start here
 
-The implementation wired by the last stable metrics pipeline used `preprocessor_versions/preprocessor_v2.py`, `Classifier_versions/Project_v1_5.py`, and `metrics_engine.py`. These are consolidated in `src/epistemis/` for the maintained package.
+You do not need to know Python or natural-language processing to understand the research.
 
-## Pipeline
+- **New to the project?** Read the [research overview](docs/research-overview.md) for the question, motivation, and conceptual framework.
+- **Want to see what the system does?** Follow the [worked example](docs/worked-example.md), which walks through an illustrative scientific claim.
+- **Encounter unfamiliar terms?** Use the [plain-language glossary](docs/glossary.md).
+- **Not sure where to go next?** The [reader's guide](docs/reader-guide.md) provides separate routes for research-focused and technical readers.
 
-```mermaid
-flowchart TD
-  A[Research paper] --> B[GROBID conversion]
-  B --> C[TEI XML]
-  C --> D[TEI parsing]
-  D --> E[Sentence segmentation and NLP features]
-  E --> F[Context and anchor heuristics]
-  F --> G[Deterministic F / A / M rules]
-  G --> H[Document-level metrics]
-  H --> I[JSON report]
-```
+## What Epistemis does
 
-The package starts from **TEI XML**. PDF-to-TEI conversion is an external preprocessing step, not part of the package CLI.
+At a high level, the software:
 
-## Labels
+1. **Reads a structured research document.** It takes TEI XML, a structured text format commonly produced from research-paper PDFs by GROBID.
+2. **Examines sentences.** It uses the spaCy language-processing library to identify sentence boundaries and linguistic features such as word forms, grammatical roles, and modality.
+3. **Looks for selected signals.** These include strong or generalising language, causal wording, qualifiers, citations, methods, quantitative information, and nearby references to evidence.
+4. **Applies explicit rules.** The classifier assigns selected F-series flags and A-series and M-series labels.
+5. **Produces a summary.** The metrics module reports counts, distributions, heuristic scores, and exploratory diagnostics in JSON.
 
-- **F-series:** primary heuristic flags — F1 (interpretive generalisation), F2 (causal escalation), F3 (unsupported causal/relational claim under the current rule implementation).
-- **A-series:** secondary rhetorical patterns — authority, consensus, loaded evaluation, and novelty-related signals.
-- **M-series:** modifiers — hedging, boosting, downtoning, emphasis, and discourse markers.
+The [architecture guide](docs/architecture.md) describes the technical pipeline. The [methodology guide](docs/methodology.md) explains the processing choices and their limits.
 
-See [taxonomy and implementation mapping](docs/taxonomy.md) for the exact conditions and inactive categories.
+## The labels, in brief
 
-## Installation
+The labels group different kinds of language signals:
 
-Requires Python 3.10 or later.
+| Group | What it examines | Examples |
+|---|---|---|
+| **F — primary flags** | Candidate patterns in how claims are expressed | Interpretive generalisation, causal escalation, unsupported causal or relational claims |
+| **A — secondary patterns** | Rhetorical signals around authority, novelty, consensus, and evaluative language | Appeals to authority or consensus; novelty claims; loaded evaluation |
+| **M — modifiers** | Language that changes the force or organisation of a statement | Hedging, boosting, downtoning, emphasis, discourse markers |
+
+These are operational categories defined by the current code, not universal measures of scientific quality. The [taxonomy](docs/taxonomy.md) maps each category to its implementation and identifies inactive categories.
+
+## What the system does not establish
+
+A sentence can contain a strong verb and still be scientifically justified. A sentence can cite a paper without accurately representing that paper. A detected evidence signal does not prove that the evidence supports the claim.
+
+Epistemis currently uses deterministic rules and heuristic scores. It has not been validated against an independently annotated evaluation corpus in this release. No precision, recall, F1, or other benchmark performance is claimed. The score is not a probability or calibrated confidence estimate.
+
+Read the [limitations and responsible interpretation notes](docs/limitations.md) before using or interpreting its output.
+
+## Technical quick start
+
+### Requirements
+
+- Python 3.10 or later
+- spaCy 3.7 (below version 4)
+- The spaCy English model `en_core_web_md`
+- A TEI XML file that you are permitted to process
+
+PDF-to-TEI conversion is external to this package. Epistemis starts from TEI XML and does not include a research-paper corpus.
+
+### Install
 
 ```bash
 python -m venv .venv
@@ -51,42 +71,46 @@ python -m pip install -e ".[dev]"
 python -m spacy download en_core_web_md
 ```
 
-The spaCy language model is installed separately from the Python package. Install a model version compatible with the spaCy version in your environment.
-
-## Run
-
-Supply a GROBID TEI XML file that you are permitted to process:
+### Run
 
 ```bash
 epistemis path/to/document.tei.xml --output outputs/document_metrics.json
 ```
 
-Or run `python -m epistemis path/to/document.tei.xml --output outputs/document_metrics.json`. Add `--debug-sentences outputs/sentences.jsonl` to write optional sentence-level debug records. Debug output is not generated automatically.
+Or:
+
+```bash
+python -m epistemis path/to/document.tei.xml --output outputs/document_metrics.json
+```
+
+To optionally write sentence-level debugging records, add:
+
+```bash
+--debug-sentences outputs/sentences.jsonl
+```
+
+The model is installed separately from the package. Use a model version compatible with the installed spaCy version.
 
 ## Repository map
 
 ```text
-src/epistemis/      Maintained package
-docs/               Architecture, methodology, taxonomy, limitations, data policy
+src/epistemis/      Maintained Python package
+docs/               Research overview, reader guide, glossary, methods, taxonomy, limits
 examples/           Small synthetic TEI example
-tests/              Parser and metrics tests
-archive/            Earlier source versions and research notes
+tests/              Parser and metrics unit tests
+archive/             Earlier source versions and historical research notes
 ```
 
-## Research status and limitations
+The `archive/` directory preserves earlier iterations and research notes. Archived files are not part of the maintained runtime and may not run unchanged. The archived DistilBERT/SciBERT protocols are historical design notes; they are not evidence that those models were integrated, trained, or evaluated in this release.
 
-- The runtime is **deterministic and rule-based**. DistilBERT/SciBERT protocols in the archive are research notes, not integrated or trained models in this release.
-- Heuristic scores are not probabilities or calibrated confidence.
-- Citation presence or a detected anchor does not establish that the cited evidence supports a claim.
-- Rules can produce false positives and false negatives. They require evaluation against independently annotated documents before performance claims can be made.
-- Document diagnostics are descriptive implementation metrics, not substitutes for precision, recall, F1, calibration, or inter-annotator agreement.
+## Data, citation, and licensing
 
-Read [methodology](docs/methodology.md) and [limitations](docs/limitations.md) before interpreting results.
+The earlier development repository contained research-paper PDFs, extracted full-text TEI files, and intermediate JSONL datasets. They are omitted from this public repository because redistribution rights were not established in the audit. The example TEI file is synthetic.
 
-## Data and licensing
+See [data policy](docs/data-policy.md) before adding external documents or derived data.
 
-The paper corpus, extracted full-text TEI documents, and intermediate JSONL datasets are intentionally omitted from this cleaned branch because redistribution rights were not established in the repository audit. Use only documents and derived data that you have permission to process and share.
+To cite the software, see [CITATION.cff](CITATION.cff). No open-source software licence has been selected. Public visibility does not grant permission to reuse, modify, or redistribute the code; all rights remain reserved unless the author adds a licence.
 
-**No open-source software licence has been assigned.** Until the author chooses and adds a licence, do not assume that the code is licensed for reuse or redistribution. See [data and licensing policy](docs/data-policy.md).
+---
 
-See [CITATION.cff](CITATION.cff) for citation metadata.
+**Project status:** exploratory research prototype. The repository documents the current implementation and its limitations; it does not claim validated detection performance.
